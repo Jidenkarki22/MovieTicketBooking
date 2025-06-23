@@ -1,5 +1,5 @@
 import { Inngest } from "inngest";
-import userModel from './../model/userModel.js';
+import User from '../model/User.js';
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "movie-ticket-booking" });
@@ -8,8 +8,8 @@ export const inngest = new Inngest({ id: "movie-ticket-booking" });
 // Inngest function to save user data to a database
 const syncUserCreation = inngest.createFunction(
 
-    { id:'sync-userModel-from-clerk'},
-    { event:'clerk/userModel.created'},
+    { id:'sync-user-from-clerk'},
+    { event:'clerk/user.created'},
     async({event}) => {
         const{id, first_name, last_name , email_address , image_url} = event.data
         const userData = {
@@ -18,7 +18,7 @@ const syncUserCreation = inngest.createFunction(
             name:first_name + ' ' + last_name,
             image: image_url 
         }
-        await userModel.create(userData)
+        await User.create(userData)
     }
 
 )
@@ -26,19 +26,19 @@ const syncUserCreation = inngest.createFunction(
 // Inngest function to delete user from database 
 const syncUserDeletion = inngest.createFunction(
 
-    { id:'delete-userModel-with-clerk'},
-    { event:'clerk/userModel.deleted'},
+    { id:'delete-user-with-clerk'},
+    { event:'clerk/user.deleted'},
     async({event}) => {
         const{id} = event.data
-        await userModel.findByIdAndDelete(id)
+        await User.findByIdAndDelete(id)
         }
 )
 
 // Inngest function to update user from database 
 const syncUserUpdation = inngest.createFunction(
 
-    { id:'update-userModel-from-clerk'},
-    { event:'clerk/userModel.updated'},
+    { id:'update-user-from-clerk'},
+    { event:'clerk/user.updated'},
     async({event}) => {
         const{id, first_name, last_name , email_address , image_url} = event.data
         const userData = {
@@ -47,7 +47,7 @@ const syncUserUpdation = inngest.createFunction(
             name:first_name + ' '+ last_name,
             image: image_url 
         }
-        await userModel.findByIdAndUpdate(id,userData)
+        await User.findByIdAndUpdate(id,userData)
     }
 )
 
